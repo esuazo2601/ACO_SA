@@ -4,7 +4,7 @@
 #include "utils.h"
 using namespace std;
 
-int hamming_cuadrado_a(std::string sol_in, vector<std::string>entrada){
+int hamming_cuadrado(string sol_in, vector<string>entrada){
     int len = sol_in.length();
     int len_entrada = entrada.size();
     vector<int>costos;

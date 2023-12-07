@@ -1,6 +1,3 @@
-# codigo auspiciado por ChatGPT
-# solo para hacerse una idea, no está terminado
-
 #include <iostream>
 #include <vector>
 #include <cstdlib>
