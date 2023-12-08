@@ -2,6 +2,7 @@
 #include <bits/stdc++.h>
 #include "utils.h"
 #include <math.h>
+#include <limits.h>
 
 // alpha = pheromones, beta = heuristic
 using namespace std;
@@ -15,7 +16,7 @@ int string_len;
 double pheromone_factor_acum = 0.0;
 double heuristic_factor_acum = 0.0;
 
-double evaporation_rate = 0.2;
+double evaporation_rate = 0.1;
 int ants = 50;
 
 struct Ant{
@@ -33,7 +34,8 @@ vector<vector<double>> init_pheromones(int string_len) {
 
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < string_len; j++) {
-            grid[i][j] = distribution(gen);
+            //grid[i][j] = distribution(gen);
+            grid[i][j] = 1.0;
         }
     }
 
@@ -84,9 +86,11 @@ double calculate_choosing_probability(const vector<vector<double>> grid, int i, 
     return probability;
 }
 
+
 auto compareFunc = [](const std::pair<int, double>& a, const std::pair<int, double>& b) {
     return a.second > b.second;
 };
+
 
 Ant ant_tour(vector<vector<double>> grid) {
     Ant ant;
@@ -146,13 +150,24 @@ void update_pheromones(vector<vector<double>>& grid, const vector<Ant>ants, doub
     }
 }
 
-void ACO(vector<vector<double>>* grid) {
-    vector<Ant> hormigas;
+pair<int, string> ACO(vector<vector<double>>* grid) {
+    pair<int,string>best_ant = make_pair(99999,"");
+    vector<Ant> hormigas; //Necesario para actualizar feromonas al final del tour 
     for (int i = 0; i < ants; i++) {
-        Ant ant = ant_tour(*grid); // Desreferencia el puntero para pasar la matriz
+        Ant ant = ant_tour(*grid); 
+        //cout<<"Hormiga "<<i<<endl;
+        //cout<<ant.solucion<<endl;
+        //cout<<ant.cost<<endl;
+        if(ant.cost < best_ant.first)
+        {
+            best_ant.first = ant.cost;
+            best_ant.second = ant.solucion;
+        }
         hormigas.push_back(ant);
+
     }
-    update_pheromones(*grid, hormigas, evaporation_rate); // Desreferencia el puntero para pasar la matriz
+    update_pheromones(*grid, hormigas, evaporation_rate);
+    return best_ant;
 }
 
 int main(int argc, char* argv[]) {
@@ -165,7 +180,15 @@ int main(int argc, char* argv[]) {
     // string_len = 15;
 
     vector<vector<double>> grid = init_pheromones(string_len);
-    ACO(&grid); // Pasa la dirección del vector como un puntero
-
+    int best_global = INT_MAX;
+    for(int i=0; i<100; i++){
+        cout<<"i: "<<i<<endl;
+        pair<int,string>best_from_iteration = ACO(&grid);
+        if (best_from_iteration.first < best_global)
+        {
+            best_global = best_from_iteration.first;
+        }
+    }
+    cout<<best_global<<endl;
     return 0;
 }
