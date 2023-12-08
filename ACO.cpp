@@ -15,6 +15,9 @@ int string_len;
 double pheromone_factor_acum = 0.0;
 double heuristic_factor_acum = 0.0;
 
+double evaporation_rate = 0.2;
+int ants = 50;
+
 struct Ant{
     int row;
     int col;
@@ -123,7 +126,7 @@ Ant ant_tour(vector<vector<double>> grid) {
     return ant;
 }
 
-void update_pheromones(vector<vector<double>>& grid, const vector<Ant>& ants, double evaporation_rate) {
+void update_pheromones(vector<vector<double>>& grid, const vector<Ant>ants, double evaporation_rate) {
     unordered_map<char, int> conversion_table = {{'A', 0}, {'C', 1}, {'T', 2}, {'G', 3}};
 
     // Evaporación de feromonas
@@ -143,25 +146,26 @@ void update_pheromones(vector<vector<double>>& grid, const vector<Ant>& ants, do
     }
 }
 
+void ACO(vector<vector<double>>* grid) {
+    vector<Ant> hormigas;
+    for (int i = 0; i < ants; i++) {
+        Ant ant = ant_tour(*grid); // Desreferencia el puntero para pasar la matriz
+        hormigas.push_back(ant);
+    }
+    update_pheromones(*grid, hormigas, evaporation_rate); // Desreferencia el puntero para pasar la matriz
+}
 
-/* void ACO (){
-    vector<Ant>ants;
-
-} */
-
-int main(int argc, char* argv[]){
+int main(int argc, char* argv[]) {
     srand(time(NULL));
-    if(argc>2 || argv[1] == "-i"){
-        string nombre_instancia = argv[2]; 
+    if (argc > 2 || argv[1] == "-i") {
+        string nombre_instancia = argv[2];
         inst = lee_instancia(nombre_instancia);
-    } 
+    }
     string_len = inst.at(0).length();
-    //string_len = 15;
+    // string_len = 15;
 
-    vector<vector<double>>grid = init_pheromones(string_len);
-    Ant ant = ant_tour(grid);
-    cout<<ant.solucion<<endl;
-    cout<<ant.cost<<endl;
+    vector<vector<double>> grid = init_pheromones(string_len);
+    ACO(&grid); // Pasa la dirección del vector como un puntero
 
     return 0;
 }
