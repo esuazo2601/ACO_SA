@@ -29,18 +29,15 @@ struct Ant{
 vector<vector<double>> init_pheromones(int string_len) {
     vector<vector<double>> grid(4, vector<double>(string_len, 0.0));
 
-    default_random_engine gen;
-    uniform_real_distribution<double> distribution(0.0, 1.0);
-
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < string_len; j++) {
-            //grid[i][j] = distribution(gen);
             grid[i][j] = 1.0;
         }
     }
 
     return grid;
 }
+
 double calculate_heuristic_next(const Ant ant, int fila) {
     // Crear una copia de la solución actual para evaluar las diferentes opciones
     string sol_adding_letter = ant.solucion;
@@ -172,16 +169,17 @@ pair<int, string> ACO(vector<vector<double>>* grid) {
 
 int main(int argc, char* argv[]) {
     srand(time(NULL));
-    if (argc > 2 || argv[1] == "-i") {
+    
+    if (argc > 2 || argv[1] == "-i" ) {
         string nombre_instancia = argv[2];
         inst = lee_instancia(nombre_instancia);
     }
+    // || argv[3] == "-t" || argv[5] == "-h" || argv[7] == "-ro"
     string_len = inst.at(0).length();
-    // string_len = 15;
-
     vector<vector<double>> grid = init_pheromones(string_len);
     int best_global = INT_MAX;
-    for(int i=0; i<100; i++){
+    
+    for(int i=0; i<10; i++){
         cout<<"i: "<<i<<endl;
         pair<int,string>best_from_iteration = ACO(&grid);
         if (best_from_iteration.first < best_global)
@@ -190,5 +188,6 @@ int main(int argc, char* argv[]) {
         }
     }
     cout<<best_global<<endl;
+    
     return 0;
 }
