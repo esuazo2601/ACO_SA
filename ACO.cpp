@@ -3,12 +3,13 @@
 #include "utils.h"
 #include <math.h>
 #include <limits.h>
+#include <chrono>
 
 // alpha = pheromones, beta = heuristic
 using namespace std;
 
-double alpha = 2.0; 
-double beta = 1.0;
+int alpha = 2; 
+int beta = 1;
 
 vector<string>inst;
 int string_len;
@@ -18,6 +19,7 @@ double heuristic_factor_acum = 0.0;
 
 double evaporation_rate = 0.1;
 int ants = 50;
+int max_time = 60;
 
 struct Ant{
     int row;
@@ -148,7 +150,7 @@ void update_pheromones(vector<vector<double>>& grid, const vector<Ant>ants, doub
 }
 
 pair<int, string> ACO(vector<vector<double>>* grid) {
-    pair<int,string>best_ant = make_pair(99999,"");
+    pair<int,string>best_ant = make_pair(INT_MAX,"");
     vector<Ant> hormigas; //Necesario para actualizar feromonas al final del tour 
     for (int i = 0; i < ants; i++) {
         Ant ant = ant_tour(*grid); 
@@ -170,23 +172,48 @@ pair<int, string> ACO(vector<vector<double>>* grid) {
 int main(int argc, char* argv[]) {
     srand(time(NULL));
     
-    if (argc > 2 || argv[1] == "-i" ) {
+    if (argc > 2 || argv[1] == "-i" || argv[3] == "-t" || argv[5] == "-h" || argv[7] == "-ro" || argv[9] == "-alpha" || argv[11] == "-beta" ) {
         string nombre_instancia = argv[2];
         inst = lee_instancia(nombre_instancia);
+        ants = stoi(argv[6]);
+        max_time = atoi(argv[4]);
+        evaporation_rate = stod(argv[8]);
+        string_len = inst.at(0).length();
+        alpha = stoi(argv[10]);
+        ::beta = stoi(argv[12]);
+
+    }else{
+        cerr<<"Faltan parametros"<<endl;
+        EXIT_FAILURE;
     }
-    // || argv[3] == "-t" || argv[5] == "-h" || argv[7] == "-ro"
-    string_len = inst.at(0).length();
+    
     vector<vector<double>> grid = init_pheromones(string_len);
     int best_global = INT_MAX;
     
-    for(int i=0; i<10; i++){
-        cout<<"i: "<<i<<endl;
+    double tiempo_greatest = 0;
+    double tiempo_now = 0;
+    std::chrono::time_point<std::chrono::system_clock> start_time = std::chrono::system_clock::now();
+
+    while (true){   
         pair<int,string>best_from_iteration = ACO(&grid);
         if (best_from_iteration.first < best_global)
         {
             best_global = best_from_iteration.first;
+            std::chrono::time_point<std::chrono::system_clock> end_time = std::chrono::system_clock::now();
+            std::chrono::duration<double> interval = (end_time - start_time);
+            tiempo_greatest = interval.count();
+
+            if(tiempo_greatest >= max_time) break;
+            
         }
+        std::chrono::time_point<std::chrono::system_clock> end_time = std::chrono::system_clock::now();
+        std::chrono::duration<double> interval2 = (end_time - start_time);
+        tiempo_now = interval2.count();
+
+        if(tiempo_now >= max_time) break;
+    
     }
+    
     cout<<best_global<<endl;
     
     return 0;
