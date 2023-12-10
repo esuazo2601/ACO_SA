@@ -105,7 +105,6 @@ Ant ant_tour(vector<vector<double>> grid) {
         ant.col = col;
         vector<pair<int,double>>probs;
 
-        // Corregir el bucle y utilizar la variable col en lugar de j
         for (size_t row = 0; row < 4; row++) {
             pheromone_factor_acum += grid[row][col];
             heuristic_factor_acum += calculate_heuristic_next(ant, row);
